@@ -1,6 +1,7 @@
-import os
 import logging
 import time
+
+from utils.environment import EnvVar
 
 from slack_sdk import WebClient
 from slack_sdk.errors import SlackApiError
@@ -8,7 +9,7 @@ from slack_sdk.errors import SlackApiError
 TOO_MANY_REQUESTS_CODE = 429
 
 def _send_message_internal(channel_id, message, use_blocks, fallback_text):
-    slack_token = os.getenv('SLACK_TOKEN')
+    slack_token = EnvVar.SLACK_TOKEN.get()
     if slack_token is None:
         logging.error("Slack API token iis missing")
 
@@ -29,7 +30,7 @@ def _send_message_internal(channel_id, message, use_blocks, fallback_text):
 def send_message(channel_id, message, use_blocks=False, fallback_text=None):
     """Send the given message to the specified channel and respect rate limits"""
 
-    channel_override = os.getenv("SLACK_CHANNEL_OVERRIDE")
+    channel_override = EnvVar.SLACK_CHANNEL_OVERRIDE.get()
     if channel_override is not None:
         logging.info(f"Would have send message to {channel_id}, sending to {channel_override} instead")
         channel_id = channel_override

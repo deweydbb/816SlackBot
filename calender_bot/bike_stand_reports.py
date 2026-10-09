@@ -1,14 +1,12 @@
 import requests
-from pprint import pprint
 import traceback
-
-from utils.slack import send_message
-from calender_bot.config import get_config_from_environment
-
 import logging
 
 from datetime import datetime
 from zoneinfo import ZoneInfo
+
+from utils.environment import EnvVar
+from utils.slack import send_message
 
 # Survey123 URL Info
 # I am going to do my best to document everything I have figured out about the url format so that if things change you are able to figure things out
@@ -53,8 +51,8 @@ from zoneinfo import ZoneInfo
 
 
 def get_new_bike_reports(interval: int):
-    ORG_ID = get_config_from_environment("ORG_ID")
-    SURVEY_ID = get_config_from_environment("SURVEY_ID")
+    ORG_ID = EnvVar.ORG_ID.get()
+    SURVEY_ID = EnvVar.SURVEY_ID.get()
     FEATURE_URL = f"https://services.arcgis.com/{ORG_ID}/arcgis/rest/services/survey123_{SURVEY_ID}_results/FeatureServer/0"
 
     # Query new features
@@ -169,7 +167,7 @@ def send_slack_message_for_new_reports(interval=1):
 
             logging.info("sending bike report message in slack: " + message)
 
-            channel = get_config_from_environment("BIKE_STAND_CHANNEL")
+            channel = EnvVar.BIKE_STAND_CHANNEL.get()
 
             send_message(channel, message)
     except Exception as e:

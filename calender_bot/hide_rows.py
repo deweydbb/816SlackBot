@@ -1,5 +1,4 @@
 import base64
-import os
 import requests
 from dateutil.parser import parse
 from datetime import date
@@ -7,6 +6,8 @@ import logging
 
 from apiclient import discovery
 from google.oauth2 import service_account
+
+from utils.environment import EnvVar
 
 from calender_bot.calender_bot import get_default_sheet, get_cell_is_date
 from calender_bot.config import *
@@ -152,7 +153,7 @@ def hide_rows(today = date.today()):
     """
     logging.info("Beginning of hide_rows")
 
-    google_api_key = os.getenv('google_api_key')
+    google_api_key = EnvVar.GOOGLE_API_KEY.get()
 
     default_sheet, data = get_sheet_data(google_api_key, SHEET_ID)
 
@@ -170,7 +171,7 @@ def hide_rows(today = date.today()):
         logging.info(f"hiding rows {first_non_hidden_row_index} to {today_row_index}")
         scopes = ["https://www.googleapis.com/auth/drive", "https://www.googleapis.com/auth/drive.file", "https://www.googleapis.com/auth/spreadsheets"]
 
-        service_account_raw_json = base64.b64decode(os.getenv('google_service_account')).decode("utf-8")
+        service_account_raw_json = base64.b64decode(EnvVar.GOOGLE_SERVICE_ACCOUNT.get()).decode("utf-8")
         google_service_account_private_key = json.loads(service_account_raw_json)
 
         # have to use a service account credentials (2 legged oauth) to make modifications

@@ -1,10 +1,11 @@
-import os
 import requests
 from dateutil.parser import parse
 from datetime import date, timedelta
 from typing import Callable
 
-from calender_bot.slack import send_volunteer_warning_message, send_special_note_message, send_bike_school_message, send_message
+from utils.environment import EnvVar
+
+from calender_bot.slack import send_volunteer_warning_message, send_special_note_message, send_bike_school_message
 from calender_bot.config import * # yeah this is kinda awful but I don't feel like improving it with a real config file
 
 ## shamelessly stolen from gspread
@@ -236,7 +237,7 @@ def send_messages_of_type(message_configs: MessageConfig, message_sender: Callab
         message_sender(message_config, all_cells, today)
 
 def send_slack_messages(today = date.today()):
-    google_api_key = os.getenv('google_api_key')
+    google_api_key = EnvVar.GOOGLE_API_KEY.get()
 
     # get the entire sheet as a 2D array
     all_cells = get_sheet_data(google_api_key, SHEET_ID)

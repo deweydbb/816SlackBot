@@ -1,26 +1,16 @@
-import os
 import json
 import logging
-import time
 import traceback
 import requests
+from pathlib import Path
 from dataclasses import dataclass, field
 from typing import List
 
+from utils.environment import EnvVar
 from utils.slack import send_message
 
 # do not change (for internal use of the program to map numbers to days)
 DAYS_OF_WEEK = ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"]
-
-
-def get_config_from_environment(key_name, default=None):
-    value = os.getenv(key_name)
-    if value == None:
-        if default != None:
-            return default
-        raise Exception(f"Environment Variable {key_name} is required")
-
-    return value
 
 @dataclass
 class MessageConfig:
@@ -52,22 +42,39 @@ class Config:
     bike_school_reminder: List[MessageConfig]
 
 def get_config_fallback() -> Config:
+    """Load configuration from environment variable or default config file."""
     logging.info("Falling back to default config")
+    
+    raw_config = EnvVar.CALENDAR_BOT_CONFIG.get()
+    
+    if raw_config:
+        logging.info("using fallback environment config")
+        data_dict = json.loads(raw_config)
+    else:
+        logging.info("using fallback file config")
+        config_path = Path("./calender_bot/default_config.json")
+        try:
+            with open(config_path, "r") as file:
+                data_dict = json.load(file)
+        except FileNotFoundError:
+            raise FileNotFoundError(f"Default config file not found at: {config_path}")
+        except json.JSONDecodeError as e:
+            raise ValueError(f"Invalid JSON in config file: {e}")
 
-    with open("./calender_bot/default_config.json", "r") as file:
-        raw_config = os.getenv("calender_bot_config")
-        data_dict = None
-        if raw_config:
-            data_dict = json.loads(raw_config)
-        else:
-            data_dict = json.load(file)
+    try:
+        config = Config(
+            shift_warning=[MessageConfig(**msg) for msg in data_dict["shift_warning"]],
+            shift_notes=[MessageConfig(**msg) for msg in data_dict["shift_notes"]],
+            bike_school_reminder=[MessageConfig(**msg) for msg in data_dict["bike_school_reminder"]],
+        )
 
-        shift_warning = [MessageConfig(**msg_config) for msg_config in data_dict['shift_warning']]
-        shift_notes = [MessageConfig(**msg_config) for msg_config in data_dict['shift_notes']]
-        bike_school_reminder = [MessageConfig(**msg_config) for msg_config in data_dict['bike_school_reminder']]
+        logging.debug(f"Fallback Config: {config}")
 
-        return Config(shift_warning=shift_warning, shift_notes=shift_notes, bike_school_reminder=bike_school_reminder)
-    raise Exception("Failed to open file and get config")
+        return config
+    except KeyError as e:
+        raise KeyError(f"Missing required config key: {e}")
+    except TypeError as e:
+        raise TypeError(f"Invalid config structure: {e}")
 
 #
 # START OF GET CONFIG CODE FROM GOOGLE SHPREADSHEET
@@ -127,7 +134,7 @@ def get_sheet_row_data(sheets, gid):
 
 
 def get_sheet_data(sheet_id, gid):
-    api_key = os.getenv('google_api_key')
+    api_key = EnvVar.GOOGLE_API_KEY.get()
 
     base_url = f"https://sheets.googleapis.com/v4/spreadsheets/{sheet_id}"
     key_param = f"key={api_key}"
@@ -261,10 +268,14 @@ def update_config(config, data, config_location):
 
 
 def get_config() -> Config:
-    try:
-        configSheetId = get_config_from_environment('CONFIG_SHEET_ID')
-        configSheetGid = get_config_from_environment('CONFIG_SHEET_GID')
+    configSheetId = EnvVar.CONFIG_SHEET_ID.get()
+    configSheetGid = EnvVar.CONFIG_SHEET_GID.get()
 
+    if configSheetId is None or configSheetGid is None:
+        logging.info("No config sheet specified, reverting to fallback config")
+        return get_config_fallback()         
+
+    try:
         data = get_sheet_data(configSheetId, configSheetGid)
 
         config_locations = get_config_locations(data)
@@ -292,6 +303,6 @@ def get_config() -> Config:
         return fallback_config        
 
 # Can find in the URL: https://docs.google.com/spreadsheets/d/{SHEET_ID}/
-SHEET_ID = get_config_from_environment('SHEET_ID')
+SHEET_ID = EnvVar.SHEET_ID.get()
 # must be of the form https://docs.google.com/spreadsheets/d/{SHEET_ID}/edit
 SHEET_URL=f"https://docs.google.com/spreadsheets/d/{SHEET_ID}/edit"

@@ -1,6 +1,4 @@
-import os
 import logging
-import time
 
 from slack_sdk import WebClient
 from slack_sdk.errors import SlackApiError
