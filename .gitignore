@@ -6,3 +6,6 @@ __pycache__
 
 local.settings.json
 google_service_account.json
+
+githubPat.txt
+triggerWorkflow.sh

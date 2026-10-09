@@ -20,4 +20,16 @@ jobs:
         run: pip install -r requirements.txt
 
       - name: Run project
+        env:
+            BIKE_STAND_CHANNEL: ${{ secrets.BIKE_STAND_CHANNEL }}
+            ORG_ID: ${{ secrets.ORG_ID }}
+            SURVEY_ID: ${{ secrets.SURVEY_ID }}
+            SHEET_ID: ${{ secrets.SHEET_ID }}
+            CONFIG_SHEET_ID: ${{ secrets.CONFIG_SHEET_ID }}
+            CONFIG_SHEET_GID: ${{ secrets.CONFIG_SHEET_GID }}
+            CALENDAR_BOT_CONFIG: ${{ secrets.CALENDAR_BOT_CONFIG }}
+            GOOGLE_API_KEY: ${{ secrets.GOOGLE_API_KEY }}
+            GOOGLE_SERVICE_ACCOUNT: ${{ secrets.GOOGLE_SERVICE_ACCOUNT }}
+            SLACK_TOKEN: ${{ secrets.SLACK_TOKEN }}
+            SLACK_CHANNEL_OVERRIDE: ${{ secrets.SLACK_CHANNEL_OVERRIDE }}
         run: python main.py
