@@ -6,7 +6,8 @@ from typing import Callable
 from utils.environment import EnvVar
 
 from calendar_bot.slack_messages.slack import send_volunteer_warning_message, send_special_note_message, send_bike_school_message
-from calendar_bot.slack_messages.config import * # yeah this is kinda awful but I don't feel like improving it with a real config file
+from calendar_bot.slack_messages.config import MessageConfig, get_config, DAYS_OF_WEEK, SHEET_ID 
+
 
 ## shamelessly stolen from gspread
 def rowcol_to_a1(row: int, col: int) -> str:

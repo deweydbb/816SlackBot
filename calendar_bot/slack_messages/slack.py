@@ -1,10 +1,9 @@
 import logging
 
-from slack_sdk import WebClient
-from slack_sdk.errors import SlackApiError
 from datetime import datetime, date
 
-from calendar_bot.slack_messages.config import * # yeah this is kinda awful but I don't feel like improving it with a real config file
+from calendar_bot.slack_messages.config import MessageConfig, SHEET_URL
+
 from utils.slack import send_message
 
 def get_volunteer_list(volunteers):

@@ -3,6 +3,7 @@ import requests
 from dateutil.parser import parse
 from datetime import date
 import logging
+import json
 
 from apiclient import discovery
 from google.oauth2 import service_account
@@ -10,7 +11,6 @@ from google.oauth2 import service_account
 from utils.environment import EnvVar
 
 from calendar_bot.slack_messages.calendar_bot import get_default_sheet, get_cell_is_date
-from calendar_bot.slack_messages.config import *
 
 ## shamelessly stolen from gspread
 def rowcol_to_a1(row: int, col: int) -> str:
@@ -154,8 +154,9 @@ def hide_rows(today = date.today()):
     logging.info("Beginning of hide_rows")
 
     google_api_key = EnvVar.GOOGLE_API_KEY.get()
+    sheet_id = EnvVar.SHEET_ID.get()
 
-    default_sheet, data = get_sheet_data(google_api_key, SHEET_ID)
+    default_sheet, data = get_sheet_data(google_api_key, sheet_id)
 
     # get the index of the row containing todays date
     today_row_index, _ = get_date_location(today, data)
@@ -180,7 +181,7 @@ def hide_rows(today = date.today()):
 
         default_sheet_id = default_sheet['properties']['sheetId']
         # SHEET_ID is technically the spreadsheet id, and default_sheet_id is the actual sheet id to modify
-        do_hide_rows_api_call(credentials, SHEET_ID, default_sheet_id, first_non_hidden_row_index, today_row_index)
+        do_hide_rows_api_call(credentials, sheet_id, default_sheet_id, first_non_hidden_row_index, today_row_index)
         logging.info("Finished hidding rows")
     else:
         logging.info("no rows to hide")
