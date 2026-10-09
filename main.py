@@ -1,18 +1,16 @@
-from dotenv import load_dotenv
-load_dotenv()
-
-from datetime import date, timedelta
 import logging
 import traceback
 import argparse
 import sys
 
-from calender_bot.config import send_message
-from calender_bot.bike_stand_reports import send_slack_message_for_new_reports
+from bike_stand.bike_stand_reports import send_slack_message_for_new_reports
+
+
 from calender_bot.calender_bot import send_slack_messages
 from calender_bot.hide_rows import hide_rows
 
 from utils.environment import EnvVar
+from utils.slack import send_message
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser()
