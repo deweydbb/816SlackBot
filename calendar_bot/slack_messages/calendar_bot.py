@@ -243,8 +243,8 @@ def send_slack_messages(today = date.today()):
     # get the entire sheet as a 2D array
     all_cells = get_sheet_data(google_api_key, SHEET_ID)
 
-    # # converts any strings that are dates into date objects
-    # # if a cell is not a date, leave as is
+    # converts any strings that are dates into date objects
+    # if a cell is not a date, leave as is
     convert_dates(all_cells)
 
     config = get_config()

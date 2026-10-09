@@ -180,7 +180,7 @@ def hide_rows(today = date.today()):
         credentials = service_account.Credentials.from_service_account_info(google_service_account_private_key, scopes=scopes)
 
         default_sheet_id = default_sheet['properties']['sheetId']
-        # SHEET_ID is technically the spreadsheet id, and default_sheet_id is the actual sheet id to modify
+        # sheet_id is technically the spreadsheet id, and default_sheet_id is the actual sheet id to modify
         do_hide_rows_api_call(credentials, sheet_id, default_sheet_id, first_non_hidden_row_index, today_row_index)
         logging.info("Finished hidding rows")
     else:

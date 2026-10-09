@@ -99,7 +99,7 @@ def send_slack_message_for_new_reports(interval=1):
     try:
         reports = get_new_bike_reports(interval)
 
-        logging.info(f"reports = {reports}")
+        logging.info(f"Found {len(reports)} new report(s): {reports}")
 
         for report in reports:
             message = f"New <{report['viewUrl']}|Report> for {report['StandLocation']} Maintenance Stand\n"
