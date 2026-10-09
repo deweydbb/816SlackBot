@@ -9,8 +9,8 @@ from google.oauth2 import service_account
 
 from utils.environment import EnvVar
 
-from calender_bot.slack_messages.calender_bot import get_default_sheet, get_cell_is_date
-from calender_bot.slack_messages.config import *
+from calendar_bot.slack_messages.calendar_bot import get_default_sheet, get_cell_is_date
+from calendar_bot.slack_messages.config import *
 
 ## shamelessly stolen from gspread
 def rowcol_to_a1(row: int, col: int) -> str:
