@@ -32,4 +32,4 @@ jobs:
             GOOGLE_SERVICE_ACCOUNT: ${{ secrets.GOOGLE_SERVICE_ACCOUNT }}
             SLACK_TOKEN: ${{ secrets.SLACK_TOKEN }}
             SLACK_CHANNEL_OVERRIDE: ${{ secrets.SLACK_CHANNEL_OVERRIDE }}
-        run: python main.py
+        run: python main.py --calendar-bot --hide-rows --bike-reports
