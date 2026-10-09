@@ -4,10 +4,7 @@ import argparse
 import sys
 
 from bike_stand.bike_stand_reports import send_slack_message_for_new_reports
-
-
-from calender_bot.calender_bot import send_slack_messages
-from calender_bot.hide_rows import hide_rows
+from calender_bot import send_slack_messages, hide_rows
 
 from utils.environment import EnvVar
 from utils.slack import send_message
