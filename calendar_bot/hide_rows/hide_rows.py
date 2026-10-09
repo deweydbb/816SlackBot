@@ -151,7 +151,7 @@ def hide_rows(today = date.today()):
     Hides all rows up until (but not including) the row containing the given date
     Does not hide frozen (pinned) rows
     """
-    logging.info("Beginning of hide_rows")
+    logging.info("--- Beginning of hide_rows ---")
 
     google_api_key = EnvVar.GOOGLE_API_KEY.get()
     sheet_id = EnvVar.SHEET_ID.get()

@@ -56,7 +56,7 @@ def send_volunteer_warning_message(config: MessageConfig, day_of_week, shift_dat
         # TODO respect config.notify_keyholders
         message += f"*•* We need a keyholder! (Remember to put {config.get_keyholder_marks_list()} after your name if are a keyholder)\n"
         
-    logging.info("sending message: " + message)
+    logging.info("sending shift warning message: " + message)
     send_message(config.channel, message)
 
 
@@ -68,7 +68,7 @@ def send_special_note_message(config: MessageConfig, day_of_week, shift_date, sp
     for special_note in special_notes:
         message += f"*•* {special_note}\n"
     
-    logging.info("sending message: " + message)
+    logging.info("sending shift notes message: " + message)
     send_message(config.channel, message)
 
 def send_bike_school_message(config: MessageConfig, day_of_week, shift_date, special_notes):
@@ -79,5 +79,5 @@ def send_bike_school_message(config: MessageConfig, day_of_week, shift_date, spe
     for special_note in special_notes:
         message += f"*•* {special_note}\n"
     
-    logging.info("sending message: " + message)
+    logging.info("sending bike school message: " + message)
     send_message(config.channel, message)

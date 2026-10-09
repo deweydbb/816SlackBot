@@ -143,7 +143,11 @@ def get_sheet_data(sheet_id, gid):
 
     r = requests.get(f"{base_url}?{key_param}&{field_mask}")
 
+    logging.debug(f"Sheets proprerty request: {r}")
+
     sheets = r.json()['sheets']
+
+    logging.debug(f"Sheet properties: {sheets}")
 
     sheet_title, num_rows, num_cols = get_row_and_column_count(sheets, gid)
 
@@ -152,6 +156,8 @@ def get_sheet_data(sheet_id, gid):
     # what fields to return from the third api call
     field_mask = "fields=sheets(properties.sheetId,data.rowData.values.formattedValue)"
     r = requests.get(f"{base_url}?{key_param}&ranges={sheet_range}&{field_mask}")
+
+    logging.debug(f"Sheet config data request: {r}")
 
     row_data = get_sheet_row_data(r.json()['sheets'], gid)
 
@@ -167,6 +173,8 @@ def get_sheet_data(sheet_id, gid):
                 new_row.append(value)
 
         data.append(new_row)
+
+    logging.debug(f"Sheet config data: {data}")
 
     return data
 
@@ -292,7 +300,7 @@ def get_config() -> Config:
         # to slack so we are aware the google sheet config is broken
         stack_trace = traceback.format_exc()
         error_msg = "Bot encountered error parsing google sheet config. Falling back to default config. Error: " + str(e) + " Stack trace: " + stack_trace
-        logging.info(error_msg)
+        logging.error(error_msg)
         
         send_message("#bot-errors", error_msg)
 

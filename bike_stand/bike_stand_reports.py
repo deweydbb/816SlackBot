@@ -21,6 +21,7 @@ def get_new_bike_reports(interval: int):
         "resultRecordCount": 2000
     }
 
+
     resp = requests.get(FEATURE_URL + "/query", params=params).json()
 
     logging.info(f"query reports in {interval} day(s): {resp}")
@@ -96,6 +97,8 @@ def get_reporter_details(report):
     return f"{reporter_name} ({reporter_email})"
 
 def send_slack_message_for_new_reports(interval=1):
+    logging.info("--- Beginning of Send Bike Reports Messages ---")
+
     try:
         reports = get_new_bike_reports(interval)
 

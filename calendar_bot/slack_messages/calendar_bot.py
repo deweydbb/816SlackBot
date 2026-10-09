@@ -1,4 +1,6 @@
 import requests
+import logging
+
 from dateutil.parser import parse
 from datetime import date, timedelta
 from typing import Callable
@@ -98,6 +100,8 @@ def get_sheet_data(api_key, sheet_id):
     field_mask = "fields=sheets.properties(index,gridProperties(rowCount,columnCount))"
     r = requests.get(f"{base_url}?{key_param}&{field_mask}")
 
+    logging.debug(f"Sheets proprerty request: {r}")
+
     sheets = r.json()['sheets']
     default_sheet = get_default_sheet(sheets)
 
@@ -105,9 +109,13 @@ def get_sheet_data(api_key, sheet_id):
     num_cols = default_sheet['properties']['gridProperties']['columnCount']
     sheet_range = get_entire_sheet_range(num_rows, num_cols)
 
+    logging.debug(f"Sheet properties: {sheets}")
+
     # what fields to return from the third api call
     field_mask = "fields=sheets.data.rowData.values(effectiveFormat(numberFormat,backgroundColor,textFormat.strikethrough),formattedValue)"
     r = requests.get(f"{base_url}?{key_param}&ranges={sheet_range}&{field_mask}")
+
+    logging.debug(f"Sheet data request: {r}")
 
     row_data = r.json()['sheets'][0]['data'][0]['rowData']
 
@@ -125,6 +133,8 @@ def get_sheet_data(api_key, sheet_id):
             new_row.append({"is_gray": is_gray, "is_date": is_date, "is_strikethrough": is_strikethrough, "value": value})
 
         data.append(new_row)
+
+    logging.debug(f"Sheet data: {data}")
 
     return data
 
@@ -191,6 +201,9 @@ def send_shift_warning_messages(config: MessageConfig, all_cells, today: date):
     day_of_week = DAYS_OF_WEEK[date_to_check.weekday()]
     
     if day_of_week in config.days:
+        logging.info(f"Staring send shift warning messages for days: {config.days}")
+        logging.debug(f"Shift warning config: {config}")
+
         volunteers, _ = get_voluneers_for_date(date_to_check, all_cells)
         has_keyholder = get_has_keyholder(volunteers, config)
 
@@ -202,6 +215,9 @@ def send_shift_notes_messages(config: MessageConfig, all_cells, today: date):
     day_of_week = DAYS_OF_WEEK[date_to_check.weekday()]
 
     if day_of_week in config.days:
+        logging.info(f"Staring send shift notes messages for days: {config.days}")
+        logging.debug(f"Shift notes config: {config}")
+
         _, special_cells = get_voluneers_for_date(date_to_check, all_cells)
 
         if special_cells:
@@ -225,6 +241,9 @@ def send_bike_school_reminder_messages(config: MessageConfig, all_cells, today: 
     day_of_week = DAYS_OF_WEEK[date_to_check.weekday()]
 
     if day_of_week in config.days:
+        logging.info(f"Snend bike school reminder messages for days: {config.days}")
+        logging.debug(f"Bike school reminder config: {config}")
+
         _, special_cells = get_voluneers_for_date(date_to_check, all_cells)
 
         if is_bike_school(special_cells, config):
@@ -238,6 +257,8 @@ def send_messages_of_type(message_configs: MessageConfig, message_sender: Callab
         message_sender(message_config, all_cells, today)
 
 def send_slack_messages(today = date.today()):
+    logging.info("--- Beginning of send calendar slack messages ---")
+
     google_api_key = EnvVar.GOOGLE_API_KEY.get()
 
     # get the entire sheet as a 2D array
