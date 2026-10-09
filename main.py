@@ -17,6 +17,12 @@ if __name__ == "__main__":
         choices=["DEBUG", "INFO", "WARNING", "ERROR", "CRITICAL"],
         help="Set the logging level"
     )
+    parser.add_argument(
+        "--stand-report-window",
+        type=int,
+        default=1,
+        help="Argument for how many days to look back for new bike stand reports (default: 1)"
+    )
     args = parser.parse_args()
 
     logging.basicConfig(
@@ -31,7 +37,7 @@ if __name__ == "__main__":
     try:
         send_slack_messages()
         hide_rows()
-        # send_slack_message_for_new_reports(1)
+        send_slack_message_for_new_reports(args.stand_report_window)
     except Exception as e:
         stack_trace = traceback.format_exc()
         error_msg = "Bot encountered error: " + str(e) + " Stack trace: " + stack_trace

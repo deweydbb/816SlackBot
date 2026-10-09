@@ -23,7 +23,7 @@ def get_new_bike_reports(interval: int):
 
     resp = requests.get(FEATURE_URL + "/query", params=params).json()
 
-    logging.info(f"query reports in last day: {resp}")
+    logging.info(f"query reports in {interval} day(s): {resp}")
 
     features = resp.get("features", [])
 
@@ -60,7 +60,7 @@ def get_new_bike_reports(interval: int):
             "StandLocation": feat["attributes"]["station_location_copy"],
             "problems": problems,
             "additionalDetails": feat["attributes"]["additional_details"],
-            "attachments": attachments,
+            "attachments": attachment_urls,
             "viewUrl": viewUrl
         })
 
@@ -76,6 +76,8 @@ def get_reported_date(report):
 
     fallback = dt_central.strftime("%Y-%m-%d %I:%M:%S %p %Z")
 
+    # This is the format for formatting days in slack messages so they are shown in the user's 
+    # timezone. The fallback text is for notificaitons
     return f"<!date^{report_secs}^{{date_short}} at {{time}}|{fallback}>"
 
 def get_reporter_details(report):
