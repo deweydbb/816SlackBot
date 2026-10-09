@@ -146,6 +146,26 @@ def do_hide_rows_api_call(credentials, spreadsheet_id, sheet_id, start_row, end_
 
     logging.info(f"update sheet result: {r}")
 
+def decode_service_account() -> dict:
+    """Decode service account JSON, handling both base64-encoded and plain JSON."""
+    account = EnvVar.GOOGLE_SERVICE_ACCOUNT.get()
+
+    # Try base64 first
+    try:
+        decoded = base64.b64decode(account).decode("utf-8")
+        return json.loads(decoded)
+    except Exception:
+        logging.info(f"Failed to get service account via base64, falling back to raw encoding")
+        pass
+    
+    # Fall back to plain JSON
+    try:
+        return json.loads(account)
+    except json.JSONDecodeError as e:
+        raise ValueError(
+            "GOOGLE_SERVICE_ACCOUNT must be either base64-encoded JSON or plain JSON"
+        ) from e
+
 def hide_rows(today = date.today()):
     """
     Hides all rows up until (but not including) the row containing the given date
@@ -172,8 +192,7 @@ def hide_rows(today = date.today()):
         logging.info(f"hiding rows {first_non_hidden_row_index} to {today_row_index}")
         scopes = ["https://www.googleapis.com/auth/drive", "https://www.googleapis.com/auth/drive.file", "https://www.googleapis.com/auth/spreadsheets"]
 
-        service_account_raw_json = base64.b64decode(EnvVar.GOOGLE_SERVICE_ACCOUNT.get()).decode("utf-8")
-        google_service_account_private_key = json.loads(service_account_raw_json)
+        google_service_account_private_key = decode_service_account()
 
         # have to use a service account credentials (2 legged oauth) to make modifications
         # to a sheet instead of just using an api key

@@ -52,7 +52,7 @@ def get_config_fallback() -> Config:
         data_dict = json.loads(raw_config)
     else:
         logging.info("using fallback file config")
-        config_path = Path("./calendar_bot/default_config.json")
+        config_path = Path("./calendar_bot/slack_messages/default_config.json")
         try:
             with open(config_path, "r") as file:
                 data_dict = json.load(file)

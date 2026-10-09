@@ -14,7 +14,7 @@ class EnvVar(Enum):
     # Can find in the URL: https://docs.google.com/spreadsheets/d/{SHEET_ID}/
     SHEET_ID = ("SHEET_ID", True)
     # variables pointing to the speadsheet/sheet of the config saying when the calendar bot should
-    # send slack messages
+    # send slack messages.
     CONFIG_SHEET_ID=("CONFIG_SHEET_ID", False)
     CONFIG_SHEET_GID=("CONFIG_SHEET_GID", False)
     # raw json config that can be used as a fallback to the gsheet, takes precedence over the 
@@ -31,7 +31,7 @@ class EnvVar(Enum):
 
     # ---- Development env variables  ---- 
     # used to override which slack channel messages are sent to
-    # useful for development environments
+    # useful for development environments to send all slack messages to a testing channel 
     SLACK_CHANNEL_OVERRIDE=("SLACK_CHANNEL_OVERRIDE", False)
 
 

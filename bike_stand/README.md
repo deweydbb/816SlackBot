@@ -1,5 +1,22 @@
-Survey123 URL Info
-I am going to do my best to document everything I have figured out about the url format so that if things change you are able to figure things out
+# Bike Stand Reports
+
+This part of the codebase is responsible for sending slack messages whenever a new bike report comes in.
+By default, the program will only look for new reports in the last 24 hours so the code is designed to 
+be run once a day at the same time. There is the chance for a missed report, if someone makes a report
+right after the code runs and the next day the code is run at a slightly later time. However, I think
+the chances of this are relatively minor. Unfortunately, the granularity of time I was able to get working
+was only in days. 
+
+The City uses product called [ArcGIS Survey123](https://survey123.arcgis.com/) for the bike stand reports.
+As of writing, there is no need to authenticate with the ArcGIS APIs. (In fact all of the survey data
+appears to be publicly available) However, it did take some reverse engineering on my part to figure
+out how everything worked. I am going to do my best to document everything I have figured out about 
+the url format and apis so that if things change you are able to figure things out.
+
+I have found that whenever the city makes changes to the survey, the field names change and it breaks
+the reporting. 
+ 
+## Survey123 URL Info
 
 Survey link: `https://survey123.arcgis.com/share/<SURVEY_ID>`
 
