@@ -1,4 +1,4 @@
-# 816 Calender Slack Bot
+# 816 Slack Bot
 
 ## Test Locally:
 - `azurite` to start local storage service
