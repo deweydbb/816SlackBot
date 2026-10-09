@@ -2,7 +2,7 @@ import requests
 from pprint import pprint
 import traceback
 
-from calender_bot.slack import send_message
+from utils.slack import send_message
 from calender_bot.config import get_config_from_environment
 
 import logging

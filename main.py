@@ -30,7 +30,7 @@ if __name__ == "__main__":
 
     try:
         send_slack_messages()
-        # hide_rows()
+        hide_rows()
         # send_slack_message_for_new_reports(1)
     except Exception as e:
         stack_trace = traceback.format_exc()

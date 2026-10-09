@@ -7,43 +7,7 @@ from slack_sdk.errors import SlackApiError
 from datetime import datetime, date
 
 from calender_bot.config import * # yeah this is kinda awful but I don't feel like improving it with a real config file
-
-def _send_message_internal(channel_id, message, use_blocks, fallback_text):
-    slack_token = os.getenv('slack_token')
-    client = WebClient(token=slack_token)
-
-    if use_blocks:
-        return client.chat_postMessage(
-            channel=channel_id,
-            text=fallback_text,
-            blocks=message
-        )
-    
-    return client.chat_postMessage(
-        channel=channel_id,
-        text=message,
-    )
-
-def send_message(channel_id, message, use_blocks=False, fallback_text=None):
-    channel_override = get_config_from_environment("SLACK_CHANNEL_OVERRIDE")
-    if channel_override is not None:
-        logging.info(f"Would have send message to {channel_id}, sending to {channel_override} instead")
-        channel_id = channel_override
-
-    """Send the given message to the specified channel and respect rate limits"""
-    try:
-        # Sending a message to the specified Slack channel
-        _send_message_internal(channel_id, message, use_blocks, fallback_text)
-        logging.info(f"Message sent successfully")
-    except SlackApiError as e:
-        if e.response.status_code == 429:
-            # The `Retry-After` header will tell you how long to wait before retrying
-            delay = int(e.response.headers['Retry-After'])
-            print(f"Rate limited. Retrying in {delay} seconds")
-            time.sleep(delay)
-            _send_message_internal(channel_id, message, use_blocks, fallback_text)
-        else:
-            logging.error(f"Error sending message: {e}")
+from utils.slack import send_message
 
 def get_volunteer_list(volunteers):
     """Get a comma separated list of volunteers where the last volunteers are separated by ', and'"""
