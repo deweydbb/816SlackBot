@@ -9,8 +9,6 @@ from typing import List, Optional
 from slack_sdk import WebClient
 from slack_sdk.errors import SlackApiError
 
-from pprint import pprint
-
 # do not change (for internal use of the program to map numbers to days)
 DAYS_OF_WEEK = ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"]
 
@@ -54,7 +52,9 @@ class Config:
     bike_school_reminder: List[MessageConfig]
 
 def get_config_fallback() -> Config:
-    with open("./calender_bot/config.json", "r") as file:
+    logging.info("Falling back to default config")
+
+    with open("./calender_bot/default_config.json", "r") as file:
         raw_config = os.getenv("calender_bot_config")
         data_dict = None
         if raw_config:
@@ -92,6 +92,11 @@ def _send_message_internal(channel_id, message, use_blocks, fallback_text):
 
 def send_message(channel_id, message, use_blocks=False, fallback_text=None):
     """Send the given message to the specified channel and respect rate limits"""
+    channel_override = get_config_from_environment("SLACK_CHANNEL_OVERRIDE")
+    if channel_override is not None:
+        logging.info(f"Would have send message to {channel_id}, sending to {channel_override} instead")
+        channel_id = channel_override
+
     try:
         # Sending a message to the specified Slack channel
         _send_message_internal(channel_id, message, use_blocks, fallback_text)
@@ -306,7 +311,8 @@ def get_config() -> Config:
         for config_location in config_locations:
             update_config(config, data, config_location)
 
-        # pprint(config)
+        logging.debug(f"Config: {config}")
+        
         return config
     except Exception as e:
         # if failed to get config from google sheet, fall back to default config and send message
@@ -316,8 +322,12 @@ def get_config() -> Config:
         logging.info(error_msg)
         
         send_message("#bot-tester", error_msg)
-        
-        return get_config_fallback()        
+
+        fallback_config = get_config_fallback()
+
+        logging.debug(f"Fallback Config: {fallback_config}")
+
+        return fallback_config        
 
 # Can find in the URL: https://docs.google.com/spreadsheets/d/{SHEET_ID}/
 SHEET_ID = get_config_from_environment('SHEET_ID')

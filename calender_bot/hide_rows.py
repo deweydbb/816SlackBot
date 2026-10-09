@@ -1,9 +1,9 @@
+import base64
 import os
 import requests
 from dateutil.parser import parse
 from datetime import date
 import logging
-import httplib2
 
 from apiclient import discovery
 from google.oauth2 import service_account
@@ -143,13 +143,14 @@ def do_hide_rows_api_call(credentials, spreadsheet_id, sheet_id, start_row, end_
         body=body
     ).execute()
 
-    logging.info(r)
+    logging.info(f"update sheet result: {r}")
 
 def hide_rows(today = date.today()):
     """
     Hides all rows up until (but not including) the row containing the given date
     Does not hide frozen (pinned) rows
     """
+    logging.info("Beginning of hide_rows")
 
     google_api_key = os.getenv('google_api_key')
 
@@ -168,7 +169,9 @@ def hide_rows(today = date.today()):
     if (first_non_hidden_row_index < today_row_index):
         logging.info(f"hiding rows {first_non_hidden_row_index} to {today_row_index}")
         scopes = ["https://www.googleapis.com/auth/drive", "https://www.googleapis.com/auth/drive.file", "https://www.googleapis.com/auth/spreadsheets"]
-        google_service_account_private_key = json.loads(os.getenv('google_service_account'))
+
+        service_account_raw_json = base64.b64decode(os.getenv('google_service_account')).decode("utf-8")
+        google_service_account_private_key = json.loads(service_account_raw_json)
 
         # have to use a service account credentials (2 legged oauth) to make modifications
         # to a sheet instead of just using an api key
@@ -177,5 +180,6 @@ def hide_rows(today = date.today()):
         default_sheet_id = default_sheet['properties']['sheetId']
         # SHEET_ID is technically the spreadsheet id, and default_sheet_id is the actual sheet id to modify
         do_hide_rows_api_call(credentials, SHEET_ID, default_sheet_id, first_non_hidden_row_index, today_row_index)
+        logging.info("Finished hidding rows")
     else:
         logging.info("no rows to hide")

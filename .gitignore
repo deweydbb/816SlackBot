@@ -5,3 +5,4 @@
 .env
 
 local.settings.json
+google_service_account.json

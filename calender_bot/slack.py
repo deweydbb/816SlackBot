@@ -25,6 +25,11 @@ def _send_message_internal(channel_id, message, use_blocks, fallback_text):
     )
 
 def send_message(channel_id, message, use_blocks=False, fallback_text=None):
+    channel_override = get_config_from_environment("SLACK_CHANNEL_OVERRIDE")
+    if channel_override is not None:
+        logging.info(f"Would have send message to {channel_id}, sending to {channel_override} instead")
+        channel_id = channel_override
+
     """Send the given message to the specified channel and respect rate limits"""
     try:
         # Sending a message to the specified Slack channel
