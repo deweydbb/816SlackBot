@@ -37,4 +37,4 @@ if __name__ == "__main__":
         error_msg = "Bot encountered error: " + str(e) + " Stack trace: " + stack_trace
         logging.info(error_msg)
                 
-        send_message("#bot-tester", error_msg)
+        send_message("#bot-errors", error_msg)

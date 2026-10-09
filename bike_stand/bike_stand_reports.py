@@ -13,7 +13,6 @@ def get_new_bike_reports(interval: int):
     SURVEY_ID = EnvVar.SURVEY_ID.get()
     FEATURE_URL = f"https://services.arcgis.com/{ORG_ID}/arcgis/rest/services/survey123_{SURVEY_ID}_results/FeatureServer/0"
 
-    # Query new features
     params = {
         "where": f"CreationDate >= CURRENT_TIMESTAMP - INTERVAL '{interval}' DAY",
         "outFields": "CreationDate,Creator,additional_details,email,station_location_copy,name,objectid,what_is_the_problem,what_is_the_problem_other,globalid",
@@ -61,7 +60,7 @@ def get_new_bike_reports(interval: int):
             "StandLocation": feat["attributes"]["station_location_copy"],
             "problems": problems,
             "additionalDetails": feat["attributes"]["additional_details"],
-            "attachments": attachment_urls,
+            "attachments": attachments,
             "viewUrl": viewUrl
         })
 
@@ -134,6 +133,6 @@ def send_slack_message_for_new_reports(interval=1):
         error_msg = "Bot encountered error sending bike stand report messages. Error: " + str(e) + " Stack trace: " + stack_trace
         logging.error(error_msg)
         
-        send_message("#bot-tester", error_msg)
+        send_message("#bot-errors", error_msg)
 
         raise e

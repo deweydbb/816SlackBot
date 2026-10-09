@@ -294,7 +294,7 @@ def get_config() -> Config:
         error_msg = "Bot encountered error parsing google sheet config. Falling back to default config. Error: " + str(e) + " Stack trace: " + stack_trace
         logging.info(error_msg)
         
-        send_message("#bot-tester", error_msg)
+        send_message("#bot-errors", error_msg)
 
         fallback_config = get_config_fallback()
 
