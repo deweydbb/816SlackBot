@@ -32,7 +32,12 @@ def send_message(channel_id, message, use_blocks=False, fallback_text=None):
 
     channel_override = EnvVar.SLACK_CHANNEL_OVERRIDE.get()
     if channel_override is not None:
-        logging.info(f"Would have send message to {channel_id}, sending to {channel_override} instead")
+        logging.info(f"Would have sent message to {channel_id}, sending to {channel_override} instead")
+        
+        message = f"[Originally for {channel_id}]\n{message}"
+        if fallback_text is not None:
+            fallback_text = f"[Originally for {channel_id}] {fallback_text}"
+
         channel_id = channel_override
 
     try:

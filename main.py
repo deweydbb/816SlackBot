@@ -22,12 +22,12 @@ if __name__ == "__main__":
         help="Hide previous weeks on the Calendar sheet"
     )
     parser.add_argument(
-        "--bike-reports",
+        "--stand-reports",
         action='store_true',
         help="Send slack messages for new bike stand reports"
     )
     parser.add_argument(
-        "--bike-report-window",
+        "--stand-report-window",
         type=int,
         default=1,
         help="Argument for how many days to look back for new bike stand reports (default: 1)"
@@ -55,8 +55,8 @@ if __name__ == "__main__":
             send_slack_messages()
         if args.hide_rows:
             hide_rows()
-        if args.bike_reports:
-            send_slack_message_for_new_reports(args.bike_report_window)
+        if args.stand_reports:
+            send_slack_message_for_new_reports(args.stand_report_window)
     except Exception as e:
         stack_trace = traceback.format_exc()
         error_msg = "Bot encountered error: " + str(e) + " Stack trace: " + stack_trace

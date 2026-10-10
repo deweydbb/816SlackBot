@@ -65,9 +65,8 @@ By default, the program will do nothing when no arguments are given. To see docu
 python main.py --help
 ```
 
-
 Example command that performs all functionality
 ```bash
-python main.py --calendar-bot --hide-rows --bike-reports
+python main.py --calendar-bot --hide-rows --stand-reports
 ```
 
