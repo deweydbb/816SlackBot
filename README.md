@@ -45,6 +45,7 @@ document some of more complicated ones here.
 - `SLACK_TOKEN` - Used for authenticaing with slack to send messages
     - [Slack OAuth Bot Token Documentation](https://docs.slack.dev/authentication/tokens/#bot)
     - Can create a bot (and token) by going to https://api.slack.com/apps and creating an app and adding it to slack
+    - When you create a slack bot you must manually add the bot to any channel you want it to be able to post messages in
 - `GOOGLE_API_KEY` - Used for authenticating with Google to access Google Sheets
     - See https://handsondataviz.org/google-sheets-api-key.html for a description of how to get one
     - It should be completely free but you will need a google cloud account

@@ -1,35 +1,57 @@
-## Types of Messages
-- Warning
-    - Warns if the shift does not enough volunteers.
-    - Warns if the shift does not have a keyholder
-        - keyholders can desigate themselves on the calendar by putting '🔑' or 'keyholder' after their name
-- Notes
-  - Sends any notes left in calendar for the shift
-  - These notes must have a NON-GRAY background and volunteers signing up for shifts should use a gray/white background to avoid being counted as a note for the shift
-
+# Calendar Bot
+- Sends slack messages when:
+    - There are not enough volunteers signed up for an upcoming shift
+    - There is not a key holder for an upcoming shift
+        - keyholders can desigate themselves on the calendar by putting '🔑' after their name. (This signifier is configurable. See configuration section below)
+    - There are notes about an upcoming shift
+        - Example: there is a new volunteer for the shift
+        - These notes must have a NON-GRAY background and volunteers signing up for shifts should use a gray/white background to avoid being counted as a note for the shift
+- Hides past weeks on the Calendar
 
 ## Configuartion
 This bot was built to be as flexible as possilbe to allow for easy changes to be made for if example
-a new shift day is added or the frequency of messages needs to be adjusted. The bot can be configured
-by modifying the values in the file `config.py`
+a new shift day is added or the frequency of messages needs to be adjusted.
 
-The following is a list of config variables that can be changed and thier description:
-- SHEET_ID: id of the google sheet being used as a signup sheet
-    - Can be found in the url: https://docs.google.com/spreadsheets/d/{SHEET_ID}/ 
-- KEYHOLDER_MARKS: List of strings users can put after their name to indicate they are a keyholder 
-SHIFT_DAYS: List of days of the week the shop is open
-    - Case sensitive. First letter should be capitalized. Ex: Monday
-- SHIFT_DAY_TO_CHANNEL: Map of the shift days to which channel the message should be posted in
-    - The keys of SHIFT_DAY_TO_CHANNEL be equal to SHIFT_DAYS
-- SHIFT_VOLUNTEER_WARNING_DAYS: List of ints that represent how many days out the warning message 
+There are three sources of configuration that checked in order. If the first source does not exist,
+the program moves on to the second source and so on. Souces in order of precedence:
+1. Google sheet
+    - The configuraiton can be set visually via a google sheet.
+    - The sheet to look at is specified by two environment variables: `CONFIG_SHEET_ID` and `CONFIG_SHEET_GID`
+        - See `utils/environment.py` for more details
+    - See `ExampleConfigSheet.xlsx` for what the current configuration sheet looks like as of writing
+2. `CALENDAR_BOT_CONFIG` environment variable 
+    - Expected format: `json`
+    - See JSON configuraiton section below and `slack_messages/default_config.json` for an example of the format
+3. `slack_messages/default_config.json`
+
+### JSON Configuration
+The configuration json is json object at the root with three fields:
+- `shift_warning`: array of shift warning config objects
+    - Each shift warning config object has the following fields:
+        - `days`: String array of the list of days the shop is open. (The days of the week to check on the calendar)
+        - `days_before`: int, represents how many days out the warning message 
 should be sent ahead of the shift
-    - Example: [6, 3, 0] means the warning message will be sent 6 days, 3 days, and the day of the shift
-    (Assuming there are not enough volunteers or there is not a keyholder)
-    - This message can be disabled by setting the value to [] (empty list)
-- SHIFT_SPECIAL_NOTES_DAYS: List of ints that represent how many days out the notes message 
+            - So for example if `days` is `Saturday` and `days_before` is `, then the check will be run on Friday
+        - `channel`: String, name of slack channel to send messages to. (must begin with `#`)
+        - `notify_channel`: boolean, whether to include `@channel` in message
+        - `notify_keyholders`: boolean, not implemented
+        - `keyholder_marks`: String array that identifies as volunteer as a keyholder
+            - If not specified, defaults to 🔑
+        - `volunteer_threshold`: int, Minimum number of volunteers needed for a shift. Any less will cause the warning message to be sent
+- `shift_notes`: array of shift note config objects
+    - Each shift notes config object has the following fields:
+        - `days`: String array of the list of days the shop is open. (The days of the week to check on the calendar)
+        - `days_before`: int, represents how many days out the warning message 
 should be sent ahead of the shift
-    - Example: [6, 3, 0] means the notes message will be sent 6 days, 3 days, and the day of the shift
-    (Assuming that there are any notes for the shift)
-    - In my opinion, this should be just [0]
-    - This message can be disabled by setting the value to [] (empty list)
-- VOLUNTEER_THRESHOLD: Minimum number of volunteers needed for a shift. Any less will cause the warning message to be sent
+            - So for example if `days` is `Saturday` and `days_before` is `, then the check will be run on Friday
+        - `channel`: String, name of slack channel to send messages to. (must begin with `#`)
+        - `notify_channel`: boolean, whether to include `@channel` in message
+- `bike_school_reminder`: array of bike school reminder config objects
+    - Each bike school reminder config object has the following fields:
+        - `days`: String array of the list of days the shop is open. (The days of the week to check on the calendar)
+        - `days_before`: int, represents how many days out the warning message 
+should be sent ahead of the shift
+            - So for example if `days` is `Saturday` and `days_before` is `, then the check will be run on Friday
+        - `channel`: String, name of slack channel to send messages to. (must begin with `#`)
+        - `notify_channel`: boolean, whether to include `@channel` in message
+        - `bikeschool_marks`: String array that identifies an event as bike school if it includes ones of the strings

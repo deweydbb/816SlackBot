@@ -21,10 +21,9 @@ def get_new_bike_reports(interval: int):
         "resultRecordCount": 2000
     }
 
-
     resp = requests.get(FEATURE_URL + "/query", params=params).json()
 
-    logging.info(f"query reports in {interval} day(s): {resp}")
+    logging.info(f"query reports in last {interval} day(s): {resp}")
 
     features = resp.get("features", [])
 
